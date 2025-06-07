@@ -57,16 +57,3 @@ We evaluate our approach on publicly available single-cell expression datasets, 
 - **Goolam**
 - **Yang**
 
-## Citation
-If you find this work useful, please cite our paper:
-```
-@article{yourcitation2025,
-  title={How Effective is In-Context Learning with Large Language Models for Rare Cell Identification in Single-Cell Expression Data?},
-  author={Your Name and Others},
-  journal={Journal/Conference},
-  year={2025}
-}
-```
-
-## Contact
-For questions or collaborations, please contact [huaiyuanyao@gmail.com].
