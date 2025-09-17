@@ -1,6 +1,4 @@
 from functools import cache
-# import transformers
-# import torch
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
@@ -51,14 +49,12 @@ class RareCellDetection:
                 device_map="auto",
             )
         elif model == "gpt" or model == "prob":
-            self.api_key = "sk-dgfU0q3uxvOoRDoR4c94Be540aFf4e178f468d88Ca1b3d5e"
-            self.url = "https://api.gptplus5.com/v1"
-            self.client = OpenAI(api_key=self.api_key, base_url=self.url)
+            self.api_key = ""
+            self.client = OpenAI(api_key=self.api_key)
         
         self.model_name = model_name
         
     def request_llm(self, prompt):
-        self.url = "https://api.gptplus5.com/v1/chat/completions"
         payload = json.dumps({
             "messages": [
                 {"role": "system",
@@ -278,9 +274,7 @@ class RareCellDetection:
             geneNames = np.array(np.array(matrix['Gene_id']))
             matrix.drop(columns=["Gene_id"], inplace=True)
 
-            # 求交集
             common_samples = set(labels['sample_title']) & set(matrix.columns)
-            # 过滤 labels 和 matrix
             matrix = matrix[list(common_samples)]
             labels = labels[labels['sample_title'].isin(common_samples)]
             labels = labels.set_index('sample_title').loc[matrix.columns].reset_index()
@@ -317,10 +311,7 @@ class RareCellDetection:
             
             geneNames = np.array(np.array(matrix.columns))
 
-            # 求交集
             common_samples = set(labels['CellName']) & set(matrix.index)
-            pdb.set_trace()
-            # 过滤 labels 和 matrix
             matrix = matrix.loc[list(common_samples)]
             # labels = labels[labels['CellName'].isin(common_samples)]
             labels = labels.set_index('CellName').loc[matrix.columns].reset_index()
@@ -362,7 +353,7 @@ class RareCellDetection:
         # Reduce dimensionality with PCA before t-SNE for efficiency
         pca = PCA(n_components=50)
         data_pca = pca.fit_transform(data)
-        # print(f"{self.dataset} 主成分方差占比：{[round(i, 4) for i in pca.explained_variance_ratio_]}")
+        # print(f"{self.dataset} component ratio：{[round(i, 4) for i in pca.explained_variance_ratio_]}")
 
         # Perform optimized t-SNE
         tsne = TSNE(n_components=2, perplexity=30, init='pca', n_iter=500, random_state=42)
@@ -402,7 +393,7 @@ class RareCellDetection:
         plt.savefig(f"t-SNE-{self.dataset}.png")
     
     def rare_cluster_variance(self, data, labels):
-        # 定义不同数据集的稀有细胞类型
+        # define rare cell types
         rare_types_dict = {
             "Darmanis": ["endothelial", "opc", "microglia"],
             "Chung": ["Stromal"],
@@ -412,10 +403,10 @@ class RareCellDetection:
             "Yang": ['Telogen_bulge_stem_cell']
         }
 
-        # 获取当前数据集的稀有类型
+        # obtain the rare 
         rare_types = rare_types_dict.get(dataset, [])
         
-        # 轮廓系数
+        # silhouette scores
         # 生成新的标签列表：将 rare_types 归为一类，其余不变
         rare_label = "rare"
         new_labels = np.array([rare_label if lbl in rare_types else lbl for lbl in labels])
@@ -1733,24 +1724,24 @@ class RareCellDetection:
             print("select key cells...")
             top_30_gene_indices_per_cell, relative_expression = self.select_key_cells_by_rank(data)
             print("llm reasoning...")
-            #### Cross-Query 的推理
+            #### Cross-Query 
             self.llm_reason_mr(labels, geneNames, top_30_gene_indices_per_cell, relative_expression, exp_name)
 
-            #### Gene-Cell Type 语义相关性分析的推理
+            #### Gene-Cell Type correlation
             # self.llm_reason_correlation(labels, geneNames, top_30_gene_indices_per_cell, relative_expression)
             
-            #### 基于决策树的推理
+            #### decision tree
             # tree = self.tree100(data, labels, geneNames, cellNames)
             # tree_nodes = self.parse_tree_structure(tree)
             # self.llm_reason_tree(data, labels, geneNames, tree_nodes, exp_name)
             
 
         print("compute metrics...")
-        #### Cross-Query 的结果
+        #### Cross-Query 
         self.compute_metrics_mr(labels, exp_name)
         self.analysis_mr_confidence(labels, exp_name)
 
-        #### Gene-Cell Type 语义相关性分析的结果
+        #### Gene-Cell Type 
         # self.llm_analyze_correlation(labels, geneNames, top_30_gene_indices_per_cell, relative_expression)
         
         # self.compute_prob(labels, exp_name)
@@ -1760,22 +1751,19 @@ def comparsion_plot(y, name):
     x = np.arange(len(y))
     x = x*10 + 10
 
-    # 使用 B 样条插值拟合曲线
     x_smooth = np.linspace(x.min(), x.max(), 300)
-    spl = make_interp_spline(x, y, k=3)  # k=3 表示三次 B 样条曲线
+    spl = make_interp_spline(x, y, k=3)  
     y_smooth = spl(x_smooth)
 
-    # 绘制曲线
     plt.figure(figsize=(8, 5))
-    plt.scatter(x, y, color='red', label='Data Points')  # 原始散点
-    plt.plot(x_smooth, y_smooth, color='blue', label='Fitted Curve')  # 拟合曲线
+    plt.scatter(x, y, color='red', label='Data Points')  
+    plt.plot(x_smooth, y_smooth, color='blue', label='Fitted Curve')  
     plt.xlabel("Data Size %")
     plt.ylabel("F1 score")
     plt.title(name)
     plt.legend()
     plt.grid()
 
-    # 显示图形
     plt.savefig(f"F1_{name}.png")
 
     
