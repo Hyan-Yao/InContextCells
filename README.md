@@ -55,5 +55,17 @@ We evaluate our approach on publicly available single-cell expression datasets, 
 - **Chung**
 - **Darmanis**
 - **Goolam**
-- **Yang**
+- **Immuno**
 
+## Citation
+
+If you find this repository useful, please cite our paper:
+
+```
+@article{yao2025rarecellagent,
+  title={How Effective is In-Context Learning with Large Language Models for Rare Cell Identification in Single-Cell Expression Data?},
+  author={Yao, Huaiyuan, Zhenxiao Cao and Xiao Luo etc.},
+  journal={arXiv preprint arXiv:2501.XXXXX},
+  year={2025}
+}
+```
