@@ -26,7 +26,6 @@ In contrast, large language models (LLMs) have demonstrated strong generalizatio
 ## Installation
 To set up the environment, clone this repository and install the required dependencies:
 ```sh
-$ git clone https://github.com/RareCellAgent.git
 $ cd RareCellAgent
 $ pip install -r requirements.txt
 ```
@@ -57,15 +56,3 @@ We evaluate our approach on publicly available single-cell expression datasets, 
 - **Goolam**
 - **Immuno**
 
-## Citation
-
-If you find this repository useful, please cite our paper:
-
-```
-@article{yao2025rarecellagent,
-  title={How Effective is In-Context Learning with Large Language Models for Rare Cell Identification in Single-Cell Expression Data?},
-  author={Yao, Huaiyuan, Zhenxiao Cao and Xiao Luo etc.},
-  journal={arXiv preprint arXiv:2501.XXXXX},
-  year={2025}
-}
-```
